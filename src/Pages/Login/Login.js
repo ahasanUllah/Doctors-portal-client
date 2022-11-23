@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { AuthContext } from '../../Context/AuthProvider';
+import useToken from '../../hooks/useToken';
 
 const Login = () => {
    const { login } = useContext(AuthContext);
@@ -10,6 +11,11 @@ const Login = () => {
    const navigate = useNavigate();
    const location = useLocation();
    const from = location.state?.from?.pathname || '/';
+   const [userEmail, setUserEmail] = useState('');
+   const [token] = useToken(userEmail);
+   if (token) {
+      navigate(from, { replace: true });
+   }
    const {
       register,
       handleSubmit,
@@ -22,7 +28,8 @@ const Login = () => {
          .then((result) => {
             const user = result.user;
             toast.success('login successfull');
-            navigate(from, { replace: true });
+            setUserEmail(data.email);
+
             console.log(user);
          })
          .catch((error) => {
@@ -37,7 +44,7 @@ const Login = () => {
             <h1 className="text-2xl font-bold text-center">Login</h1>
             <form onSubmit={handleSubmit(handleLogin)} className="space-y-6 ng-untouched ng-pristine ng-valid">
                <div className="space-y-1 text-sm">
-                  <label for="email" className="block text-gray-600">
+                  <label htmlFor="email" className="block text-gray-600">
                      Email
                   </label>
                   <input
@@ -54,7 +61,7 @@ const Login = () => {
                   )}
                </div>
                <div className="space-y-1 text-sm">
-                  <label for="password" className="block text-gray-600">
+                  <label htmlFor="password" className="block text-gray-600">
                      Password
                   </label>
                   <input

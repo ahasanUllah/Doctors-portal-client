@@ -1,7 +1,7 @@
 import React from 'react';
 
 const AppointmentOptions = ({ appointmentOptions, setTreatment }) => {
-   const { name, slots } = appointmentOptions;
+   const { name, slots, price } = appointmentOptions;
    return (
       <div>
          <div className="card   shadow-xl">
@@ -13,6 +13,7 @@ const AppointmentOptions = ({ appointmentOptions, setTreatment }) => {
                <p>
                   {slots.length} {slots.length > 1 ? 'spaces' : 'space'} availabe
                </p>
+               <p>Price: ${price}</p>
                <div className="card-actions justify-center">
                   <label
                      disabled={slots.length === 0}

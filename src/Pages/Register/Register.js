@@ -1,12 +1,20 @@
 import React, { useContext, useState } from 'react';
 import toast from 'react-hot-toast';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { AuthContext } from '../../Context/AuthProvider';
+import useToken from '../../hooks/useToken';
 
 const Register = () => {
    const { createUser, updateUser } = useContext(AuthContext);
    const [registerError, setRegisterError] = useState('');
+   const [userEmail, setUserEmail] = useState('');
+   const [token] = useToken(userEmail);
+   const navigate = useNavigate();
+
+   if (token) {
+      navigate('/');
+   }
 
    const {
       register,
@@ -23,6 +31,7 @@ const Register = () => {
                .then(() => {
                   console.log('profile updated');
                   toast.success('register success');
+                  saveUser(data.name, data.email);
                })
                .catch((error) => console.log(error));
 
@@ -34,13 +43,31 @@ const Register = () => {
          });
    };
 
+   const saveUser = (name, email) => {
+      const user = { name, email };
+      console.log(user);
+
+      fetch('http://localhost:5000/users', {
+         method: 'POST',
+         headers: {
+            'content-type': 'application/json',
+         },
+         body: JSON.stringify(user),
+      })
+         .then((res) => res.json())
+         .then((data) => {
+            console.log(data);
+            setUserEmail(email);
+         });
+   };
+
    return (
       <div className="h-[800px] flex justify-center items-center">
          <div className="w-full max-w-md p-8 space-y-3 rounded-xl bg-gray-50 text-gray-800">
             <h1 className="text-2xl font-bold text-center">Register</h1>
             <form onSubmit={handleSubmit(handleRegister)} className="space-y-6 ng-untouched ng-pristine ng-valid">
                <div className="space-y-1 text-sm">
-                  <label for="name" className="block text-gray-600">
+                  <label htmlFor="name" className="block text-gray-600">
                      Name
                   </label>
                   <input
@@ -57,7 +84,7 @@ const Register = () => {
                   )}
                </div>
                <div className="space-y-1 text-sm">
-                  <label for="username" className="block text-gray-600">
+                  <label htmlFor="username" className="block text-gray-600">
                      Email
                   </label>
                   <input
@@ -80,7 +107,7 @@ const Register = () => {
                   )}
                </div>
                <div className="space-y-1 text-sm">
-                  <label for="password" className="block text-gray-600">
+                  <label htmlFor="password" className="block text-gray-600">
                      Password
                   </label>
                   <input
